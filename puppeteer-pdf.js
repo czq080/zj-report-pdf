@@ -119,8 +119,7 @@ cli
 
   //read csv
   let csvFilePath = options['csv'];
-  // var cs = path.join(csvFilePath, '..' ,'dataArray.csv');
-  var cs = path.join('dataArray.csv');
+  var cs = path.join(csvFilePath, '..' ,'dataArray.csv');
   var ws = fs.createWriteStream(cs)
   var tabReg = new RegExp("\t", 'g')
   var i = 0;
@@ -149,27 +148,27 @@ cli
     // Print the CSV stream to stdout
     .pipe(ws)
 
-  // let chromePath = path.join(".local-chromium", "chrome.exe");
-  // const browser = await puppeteer.launch({
-  //   executablePath: chromePath,
-  //   headless: true,
-  //   ignoreDefaultArgs: ['--disable-extensions'],
-  //   args: ["--no-sandbox", "disable-setuid-sandbox", "--disable-web-security",
-  //     '--disable-features=IsolateOrigins,site-per-process'
-  //   ]
-  // });
-  // const page = await browser.newPage();
+  let chromePath = path.join(".local-chromium", "chrome.exe");
+  const browser = await puppeteer.launch({
+    executablePath: chromePath,
+    headless: true,
+    ignoreDefaultArgs: ['--disable-extensions'],
+    args: ["--no-sandbox", "disable-setuid-sandbox", "--disable-web-security",
+      '--disable-features=IsolateOrigins,site-per-process'
+    ]
+  });
+  const page = await browser.newPage();
 
-  // // Get URL / file path from first argument
-  // const location = _.first(cli.args);
-  // await page.goto(isUrl(location) ? location : fileUrl(location), {
-  //   waitUntil: _.get(options, "waitUntil", "networkidle2")
-  // });
-  // // Output options if in debug mode
-  // if (cli.debug) {
-  //   console.log(options);
-  // }
-  // await page.pdf(options);
+  // Get URL / file path from first argument
+  const location = _.first(cli.args);
+  await page.goto(isUrl(location) ? location : fileUrl(location), {
+    waitUntil: _.get(options, "waitUntil", "networkidle2")
+  });
+  // Output options if in debug mode
+  if (cli.debug) {
+    console.log(options);
+  }
+  await page.pdf(options);
 
-  // await browser.close();
+  await browser.close();
 })();
