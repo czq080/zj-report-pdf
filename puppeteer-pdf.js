@@ -119,59 +119,57 @@ cli
 
   //read csv
   let csvFilePath = options['csv'];
-  var cs = path.join(csvFilePath, '..' ,'dataArray.csv');
+  // var cs = path.join(csvFilePath, '..' ,'dataArray.csv');
+  var cs = path.join('dataArray.csv');
   var ws = fs.createWriteStream(cs)
   var tabReg = new RegExp("\t", 'g')
   var i = 0;
   fs.createReadStream(csvFilePath, {
-      encoding: "utf16le"
-    }).pipe(csv.parse({
-      delimiter: "  ",
-      encoding: "utf-8",
-      skipEmptyLines: true,
-      skip_lines_with_empty_values: true,
-      // skip_lines_with_error: true,
-      ltrim: true,
-      rtrim: true
-    }))
+    encoding: "utf16le"
+  }).pipe(csv.parse({
+    delimiter: "\t",
+    encoding: "utf-8",
+    // skip_lines_with_empty_values: true,
+    // skip_lines_with_error: true,
+    relax_column_count: true,
+    ltrim: true,
+    rtrim: true,
+    bom: true}))
     // Transform each value into uppercase
     .pipe(csv.transform(function (record) {
-      i++;
       return record.map(function (data) {
-        if (i === 1) {
-          return i + ',' + data.replace(new RegExp(" ", 'g'), ",") + '||';
-        }
-        return i + ',' + data.replace(tabReg, ",") + '||';
+        return data
       });
     }))
     // Convert the object into a stream
     .pipe(csv.stringify({
-      quote: false,
+      quote: true,
+      quoted_empty: true
     }))
     // Print the CSV stream to stdout
     .pipe(ws)
 
-  let chromePath = path.join(".local-chromium", "chrome.exe");
-  const browser = await puppeteer.launch({
-    executablePath: chromePath,
-    headless: true,
-    ignoreDefaultArgs: ['--disable-extensions'],
-    args: ["--no-sandbox", "disable-setuid-sandbox", "--disable-web-security",
-      '--disable-features=IsolateOrigins,site-per-process'
-    ]
-  });
-  const page = await browser.newPage();
+  // let chromePath = path.join(".local-chromium", "chrome.exe");
+  // const browser = await puppeteer.launch({
+  //   executablePath: chromePath,
+  //   headless: true,
+  //   ignoreDefaultArgs: ['--disable-extensions'],
+  //   args: ["--no-sandbox", "disable-setuid-sandbox", "--disable-web-security",
+  //     '--disable-features=IsolateOrigins,site-per-process'
+  //   ]
+  // });
+  // const page = await browser.newPage();
 
-  // Get URL / file path from first argument
-  const location = _.first(cli.args);
-  await page.goto(isUrl(location) ? location : fileUrl(location), {
-    waitUntil: _.get(options, "waitUntil", "networkidle2")
-  });
-  // Output options if in debug mode
-  if (cli.debug) {
-    console.log(options);
-  }
-  await page.pdf(options);
+  // // Get URL / file path from first argument
+  // const location = _.first(cli.args);
+  // await page.goto(isUrl(location) ? location : fileUrl(location), {
+  //   waitUntil: _.get(options, "waitUntil", "networkidle2")
+  // });
+  // // Output options if in debug mode
+  // if (cli.debug) {
+  //   console.log(options);
+  // }
+  // await page.pdf(options);
 
-  await browser.close();
+  // await browser.close();
 })();
